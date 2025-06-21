@@ -1,20 +1,23 @@
 package com.ikeda.payment.services.impl;
 
+import com.ikeda.payment.dtos.PaymentCommandRecordDto;
 import com.ikeda.payment.dtos.PaymentRequestRecordDto;
 import com.ikeda.payment.enums.PaymentControl;
 import com.ikeda.payment.exceptions.NotFoundException;
 import com.ikeda.payment.models.CreditCardModel;
 import com.ikeda.payment.models.PaymentModel;
 import com.ikeda.payment.models.UserModel;
+import com.ikeda.payment.publishers.PaymentCommandPublisher;
 import com.ikeda.payment.repositories.CreditCardRepository;
 import com.ikeda.payment.repositories.PaymentRepository;
 import com.ikeda.payment.repositories.UserRepository;
 import com.ikeda.payment.services.PaymentService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +29,18 @@ import java.util.UUID;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    Logger logger = LogManager.getLogger(PaymentServiceImpl.class);
+
     final PaymentRepository paymentRepository;
     final UserRepository userRepository;
     final CreditCardRepository creditCardRepository;
+    final PaymentCommandPublisher paymentCommandPublisher;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.creditCardRepository = creditCardRepository;
+        this.paymentCommandPublisher = paymentCommandPublisher;
     }
 
     @Transactional
@@ -65,7 +72,13 @@ public class PaymentServiceImpl implements PaymentService {
         paymentModel.setUser(userModel);
         paymentRepository.save(paymentModel);
 
-        // send requet to queue
+        try {
+            var paymentCommandRecordDto = new PaymentCommandRecordDto(userModel.getUserId(), paymentModel.getPaymentId(), creditCardModel.getCardId());
+            paymentCommandPublisher.publishPaymentCommand(paymentCommandRecordDto);
+        } catch (Exception e){
+            logger.error("Error sending payment command message with cause: {} ", e.getMessage());
+        }
+
 
         return paymentModel;
     }
