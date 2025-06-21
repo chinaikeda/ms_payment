@@ -1,0 +1,179 @@
+package com.ikeda.payment.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ikeda.payment.enums.PaymentStatus;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
+
+@Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Table(name = "TB_USERS")
+public class UserModel implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    private UUID userId;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String login;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String email;
+
+    @JsonIgnore
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @Column(nullable = false, unique = true, length = 150)
+    private String name;
+
+    @Column(nullable = false)
+    private String userStatus;
+
+    @Column(nullable = false)
+    private String userType;
+
+    @Column(length = 20)
+    private String phoneNumber;
+
+    @Column(length = 255)
+    private String imageUrl;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Column
+    private LocalDateTime paymentExpirationDate;
+
+    @Column
+    private LocalDateTime firstPaymentDate;
+
+    @Column
+    private LocalDateTime lastPaymentDate;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<PaymentModel> payments;
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public LocalDateTime getPaymentExpirationDate() {
+        return paymentExpirationDate;
+    }
+
+    public void setPaymentExpirationDate(LocalDateTime paymentExpirationDate) {
+        this.paymentExpirationDate = paymentExpirationDate;
+    }
+
+    public LocalDateTime getFirstPaymentDate() {
+        return firstPaymentDate;
+    }
+
+    public void setFirstPaymentDate(LocalDateTime firstPaymentDate) {
+        this.firstPaymentDate = firstPaymentDate;
+    }
+
+    public LocalDateTime getLastPaymentDate() {
+        return lastPaymentDate;
+    }
+
+    public void setLastPaymentDate(LocalDateTime lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
+    }
+
+    public Set<PaymentModel> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(Set<PaymentModel> payments) {
+        this.payments = payments;
+    }
+}

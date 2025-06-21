@@ -1,0 +1,46 @@
+# deixar este
+spring:
+  config:
+    import: 'configserver'
+  cloud:
+    config:
+      discovery:
+        serviceId: ikeda-config-server
+      username: configserver
+      password: 123456
+
+# retirar tudo abaixo
+#server:
+#  port: 8089
+#  servlet:
+#    context-path: '/ikeda-payment/'
+#
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/ikeda-payment
+#    username: postgres
+#    password: zaq1@wsx
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#      dialect: org.hibernate.dialect.PostgreSQLDialect
+#      jdbc:
+#        lob.non-contextual-creation: true
+#    properties:
+#      hibernate:
+#        show_sql: true
+#  output:
+#    ansi:
+#      enabled: Always
+#
+#ikeda:
+#  api:
+#    url:
+#      register: 'http://localhost:8082/ikeda-register'
+#
+#logging:
+#  level:
+#    com.ikeda: TRACE
+#    root: INFO
+#    org.springframework.web: DEBUG
+#    org.hibernate: INFO
