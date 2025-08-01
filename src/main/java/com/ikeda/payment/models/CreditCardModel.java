@@ -22,7 +22,7 @@ public class CreditCardModel implements Serializable {
     @Column(nullable = false, length = 20)
     private String cardHolderCpf;
 
-//    TODO - criptografia dos dados
+//    TODO - AI - criptografia dos dados
     @Column(nullable = false, length = 20)
     private String creditCardNumber;
 
@@ -30,7 +30,7 @@ public class CreditCardModel implements Serializable {
     private String expirationDate;
 
     @Column(nullable = false, length = 3)
-    private String ccvCode;
+    private String cvvCode;
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true, nullable = false)
@@ -76,12 +76,12 @@ public class CreditCardModel implements Serializable {
         this.expirationDate = expirationDate;
     }
 
-    public String getCcvCode() {
-        return ccvCode;
+    public String getCvvCode() {
+        return cvvCode;
     }
 
-    public void setCcvCode(String ccvCode) {
-        this.ccvCode = ccvCode;
+    public void setCvvCode(String cvvCode) {
+        this.cvvCode = cvvCode;
     }
 
     public UserModel getUser() {

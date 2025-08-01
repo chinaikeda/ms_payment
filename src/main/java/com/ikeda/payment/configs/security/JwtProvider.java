@@ -22,7 +22,7 @@ public class JwtProvider {
 
     Logger logger = LogManager.getLogger(JwtProvider.class);
 
-    @Value("${ead.auth.jwtSecret}")
+    @Value("${ikeda.auth.jwtSecret}")
     private String jwtSecret;
 
     private SecretKey getSecretKey() {

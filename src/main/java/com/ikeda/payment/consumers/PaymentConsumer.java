@@ -25,10 +25,7 @@ public class PaymentConsumer {
             key = "${ikeda.broker.key.paymentCommandKey}")
     )
     public void listenPaymentCommand(@Payload PaymentCommandRecordDto paymentCommandRecordDto){
-        System.out.println(paymentCommandRecordDto.paymentoId());
-        System.out.println(paymentCommandRecordDto.userId());
-        System.out.println(paymentCommandRecordDto.cardID());
-
-        //TODO - make payment
+        //TODO - AI - make payment - START PROCESS
+        paymentService.makePayment(paymentCommandRecordDto);
     }
 }

@@ -23,14 +23,10 @@ public class UserModel implements Serializable {
     private UUID userId;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String login;
+    private String username;
 
     @Column(nullable = false, unique = true, length = 50)
     private String email;
-
-    @JsonIgnore
-    @Column(nullable = false, length = 255)
-    private String password;
 
     @Column(nullable = false, unique = true, length = 150)
     private String name;
@@ -73,12 +69,12 @@ public class UserModel implements Serializable {
         this.userId = userId;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -87,14 +83,6 @@ public class UserModel implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {

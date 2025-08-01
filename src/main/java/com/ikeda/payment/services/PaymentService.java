@@ -1,5 +1,6 @@
 package com.ikeda.payment.services;
 
+import com.ikeda.payment.dtos.PaymentCommandRecordDto;
 import com.ikeda.payment.dtos.PaymentRequestRecordDto;
 import com.ikeda.payment.models.PaymentModel;
 import com.ikeda.payment.models.UserModel;
@@ -20,4 +21,6 @@ public interface PaymentService {
     Page<PaymentModel> findAllByUser(Specification<PaymentModel> and, Pageable pageable);
 
     Optional<PaymentModel> findPaymentByUser(UUID userId, UUID paymentId);
+
+    void makePayment(PaymentCommandRecordDto paymentCommandRecordDto);
 }

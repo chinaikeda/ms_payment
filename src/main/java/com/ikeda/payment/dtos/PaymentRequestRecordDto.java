@@ -15,7 +15,7 @@ public record PaymentRequestRecordDto(@NotNull
 
                                       @NotBlank
                                       @CPF
-                                      String cardHolderCPF,
+                                      String cardHolderCpf,
 
                                       @NotBlank
                                       @Size(min = 16, max = 20)
