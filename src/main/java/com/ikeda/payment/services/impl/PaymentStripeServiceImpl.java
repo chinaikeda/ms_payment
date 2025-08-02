@@ -76,6 +76,7 @@ public class PaymentStripeServiceImpl implements PaymentStripeService {
             paymentModel.setPaymentControl(PaymentControl.ERROR);
             paymentModel.setPaymentMessage("payment error v2 - paymentIntent: " + paymentIntentId);
         }
+
         return paymentModel;
     }
 

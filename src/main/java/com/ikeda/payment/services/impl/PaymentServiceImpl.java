@@ -1,5 +1,6 @@
 package com.ikeda.payment.services.impl;
 
+import com.ikeda.payment.dtos.NotificationRecordCommandDto;
 import com.ikeda.payment.dtos.PaymentCommandRecordDto;
 import com.ikeda.payment.dtos.PaymentRequestRecordDto;
 import com.ikeda.payment.enums.PaymentControl;
@@ -8,6 +9,7 @@ import com.ikeda.payment.exceptions.NotFoundException;
 import com.ikeda.payment.models.CreditCardModel;
 import com.ikeda.payment.models.PaymentModel;
 import com.ikeda.payment.models.UserModel;
+import com.ikeda.payment.publishers.NotificationCommandPublisher;
 import com.ikeda.payment.publishers.PaymentCommandPublisher;
 import com.ikeda.payment.publishers.PaymentEventPublisher;
 import com.ikeda.payment.repositories.CreditCardRepository;
@@ -40,14 +42,16 @@ public class PaymentServiceImpl implements PaymentService {
     final PaymentCommandPublisher paymentCommandPublisher;
     final PaymentStripeService paymentStripeService;
     final PaymentEventPublisher paymentEventPublisher;
+    final NotificationCommandPublisher notificationCommandPublisher;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher, PaymentStripeService paymentStripeService, PaymentEventPublisher paymentEventPublisher) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher, PaymentStripeService paymentStripeService, PaymentEventPublisher paymentEventPublisher, NotificationCommandPublisher notificationCommandPublisher) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.creditCardRepository = creditCardRepository;
         this.paymentCommandPublisher = paymentCommandPublisher;
         this.paymentStripeService = paymentStripeService;
         this.paymentEventPublisher = paymentEventPublisher;
+        this.notificationCommandPublisher = notificationCommandPublisher;
     }
 
     @Transactional
@@ -70,6 +74,13 @@ public class PaymentServiceImpl implements PaymentService {
         creditCardModel.setUser(userModel);
         creditCardRepository.save(creditCardModel);
 
+        try {
+            var notificationRecordCommandDto = new NotificationRecordCommandDto("RequestPayment Card - Inclusão de Cartão", userModel.getName() + " seu cartão " + creditCardModel.getCreditCardNumber() + " foi registrado com sucesso!", userModel.getUserId());
+            notificationCommandPublisher.publishNotificationCommand(notificationRecordCommandDto);
+        } catch (Exception e){
+            logger.error("Error sending notification message with cause: {} ", e.getMessage());
+        }
+
         var paymentModel = new PaymentModel();
         paymentModel.setPaymentControl(PaymentControl.REQUESTED);
         paymentModel.setPaymentRequestDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -86,6 +97,12 @@ public class PaymentServiceImpl implements PaymentService {
             logger.error("Error sending payment command message with cause: {} ", e.getMessage());
         }
 
+        try {
+            var notificationRecordCommandDto = new NotificationRecordCommandDto("RequestPayment Request - Solicitação de Pgto", userModel.getName() + ", o procedimento para pagamento foi solicitado!", userModel.getUserId());
+            notificationCommandPublisher.publishNotificationCommand(notificationRecordCommandDto);
+        } catch (Exception e){
+            logger.error("Error sending notification message with cause: {} ", e.getMessage());
+        }
 
         return paymentModel;
     }
@@ -130,6 +147,13 @@ public class PaymentServiceImpl implements PaymentService {
             userModel.setPaymentStatus(PaymentStatus.DEBTOR);
         }
         userRepository.save(userModel);
+
+        try {
+            var notificationRecordCommandDto = new NotificationRecordCommandDto("RequestPayment - Status", userModel.getName() + ", o procedimento para pagamento se encontra com o status de " + paymentModel.getPaymentControl(), userModel.getUserId());
+            notificationCommandPublisher.publishNotificationCommand(notificationRecordCommandDto);
+        } catch (Exception e){
+            logger.error("Error sending notification message with cause: {} ", e.getMessage());
+        }
 
         if (paymentModel.getPaymentControl().equals(PaymentControl.EFFECTED) ||
                 paymentModel.getPaymentControl().equals(PaymentControl.REFUSED)){
